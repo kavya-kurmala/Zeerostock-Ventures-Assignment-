@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Inventory Search</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f7fa;
+      padding: 30px;
+    }
+
+    h2 {
+      text-align: center;
+      color: #333;
+    }
+
+    .container {
+      max-width: 700px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    input, select {
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      flex: 1;
+    }
+
+    button {
+      padding: 10px 20px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #0056b3;
+    }
+
+    .results {
+      margin-top: 20px;
+    }
+
+    .card {
+      background: #fafafa;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      border-left: 5px solid #007bff;
+      transition: transform 0.2s;
+    }
+
+    .card:hover {
+      transform: scale(1.02);
+    }
+
+    .title {
+      font-weight: bold;
+      font-size: 18px;
+      color: #333;
+    }
+
+    .meta {
+      color: #666;
+      margin-top: 5px;
+    }
+
+    .empty {
+      text-align: center;
+      color: red;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+  <h2>🔍 Inventory Search</h2>
+
+  <div class="filters">
+    <input id="search" placeholder="Search product...">
+
+    <select id="category">
+      <option value="">All Categories</option>
+      <option value="Electronics">Electronics</option>
+      <option value="Furniture">Furniture</option>
+      <option value="Accessories">Accessories</option>
+    </select>
+
+    <input id="minPrice" type="number" placeholder="Min Price">
+    <input id="maxPrice" type="number" placeholder="Max Price">
+
+    <button onclick="search()">Search</button>
+  </div>
+
+  <div class="results" id="results"></div>
+</div>
+
+<script>
+async function search() {
+  const q = document.getElementById("search").value;
+  const category = document.getElementById("category").value;
+  const minPrice = document.getElementById("minPrice").value;
+  const maxPrice = document.getElementById("maxPrice").value;
+
+  const url = `http://localhost:5000/search?q=${q}&category=${category}&minPrice=${minPrice}&maxPrice=${maxPrice}`;
+
+  const resultsDiv = document.getElementById("results");
+  resultsDiv.innerHTML = "Loading...";
+
+  try {
+    const res = await fetch(url);
+
+    if (res.status === 400) {
+      resultsDiv.innerHTML = "<p class='empty'>Invalid price range</p>";
+      return;
+    }
+
+    const data = await res.json();
+
+    resultsDiv.innerHTML = "";
+
+    if (data.length === 0) {
+      resultsDiv.innerHTML = "<p class='empty'>No results found</p>";
+      return;
+    }
+
+    data.forEach(item => {
+      const card = document.createElement("div");
+      card.className = "card";
+
+      card.innerHTML = `
+        <div class="title">${item.name}</div>
+        <div class="meta">Category: ${item.category}</div>
+        <div class="meta">Price: ₹${item.price}</div>
+      `;
+
+      resultsDiv.appendChild(card);
+    });
+
+  } catch (error) {
+    resultsDiv.innerHTML = "<p class='empty'>Error connecting to server</p>";
+  }
+}
+</script>
+
+</body>
+</html>
