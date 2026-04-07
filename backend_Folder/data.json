@@ -1,0 +1,7 @@
+[
+  { "id": 1, "name": "iPhone 12", "category": "Electronics", "price": 500 },
+  { "id": 2, "name": "Samsung TV", "category": "Electronics", "price": 800 },
+  { "id": 3, "name": "Office Chair", "category": "Furniture", "price": 120 },
+  { "id": 4, "name": "Dining Table", "category": "Furniture", "price": 300 },
+  { "id": 5, "name": "Headphones", "category": "Accessories", "price": 50 }
+]
